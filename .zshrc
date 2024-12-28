@@ -106,14 +106,14 @@ source $ZSH/oh-my-zsh.sh
 alias vim="nvim"
 
 # NVIM config
-source ~/.nvm/nvm.sh
+#source ~/.nvm/nvm.sh
 
 alias ssh-work='eval `ssh-agent` && ssh-add /home/depsouza/.ssh/work'
 
 # pnpm
-export PNPM_HOME="/home/depsouza/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
+#export PNPM_HOME="/home/depsouza/.local/share/pnpm"
+#case ":$PATH:" in
+#  *":$PNPM_HOME:"*) ;;
+#  *) export PATH="$PNPM_HOME:$PATH" ;;
+#esac
 # pnpm end
