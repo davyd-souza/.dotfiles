@@ -2,31 +2,39 @@ return {
 	"stevearc/conform.nvim",
 	name = "conform",
 	config = function()
+		print("format")
 		require("conform").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
 
-				javascript = { "biome", "prettierd", stop_after_first = true },
-				typescript = { "biome", "prettierd", stop_after_first = true },
-				javascriptreact = { "biome", "prettierd", stop_after_first = true },
-				typescriptreact = { "biome", "prettierd", stop_after_first = true },
+				javascript = { "prettier", "biome", stop_after_first = true },
+				typescript = { "prettier", "biome", stop_after_first = true },
+				javascriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
+				typescriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
 			},
 
 			format_on_save = {
-				timeout_ms = 500,
+				timeout_ms = 100,
 				lsp_format = "fallback",
 			},
 		})
 
 		vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = "*",
+			pattern = { ".lua" },
 			callback = function(args)
+				--[[
+				local ignore_ft = { "%.tsx?$", "%.jsx?$" }
+
+				for _, pattern in ipairs(ignore_ft) do
+					if args.file and args.file:match(pattern) then
+						return
+					end
+				end
+				]]
+				--
+
 				require("conform").format({ bufnr = args.buf })
 			end,
 		})
-
-		vim.keymap.set("n", "<leader>f", function()
-			require("conform").format({ async = true, lsp_format = "fallback" })
-		end, { desc = "[F]ormat Buffer" })
 	end,
 }
