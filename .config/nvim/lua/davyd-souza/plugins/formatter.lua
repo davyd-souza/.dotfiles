@@ -2,7 +2,6 @@ return {
 	"stevearc/conform.nvim",
 	name = "conform",
 	config = function()
-		print("format")
 		require("conform").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
@@ -11,12 +10,19 @@ return {
 				typescript = { "prettier", "biome", stop_after_first = true },
 				javascriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
 				typescriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
+
+				astro = { "prettier", "biome", stop_after_first = true },
 			},
 
 			format_on_save = {
-				timeout_ms = 100,
+				timeout_ms = 500,
 				lsp_format = "fallback",
+				async = true,
 			},
+
+			notify_on_error = true,
+
+			log_level = vim.log.levels.ERROR,
 		})
 
 		vim.api.nvim_create_autocmd("BufWritePre", {
@@ -36,5 +42,9 @@ return {
 				require("conform").format({ bufnr = args.buf })
 			end,
 		})
+
+		vim.keymap.set("n", "<leader>f", function()
+			require("conform").format({ async = true, lsp_fallback = true })
+		end, { desc = "[F]ormat File" })
 	end,
 }
