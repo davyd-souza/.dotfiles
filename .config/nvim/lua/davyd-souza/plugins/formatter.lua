@@ -8,10 +8,10 @@ return {
 
 				javascript = { "prettier", "biome", stop_after_first = true },
 				typescript = { "prettier", "biome", stop_after_first = true },
-				javascriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
-				typescriptreact = { "prettier", "biome", stop_after_first = true, lsp_format = "never" },
+				javascriptreact = { "prettier", "biome", stop_after_first = true },
+				typescriptreact = { "prettier", "biome", stop_after_first = true },
 
-				astro = { "prettier", "biome", stop_after_first = true },
+				-- astro = { "biome", "prettier", stop_after_first = true },
 			},
 
 			format_on_save = {
@@ -19,10 +19,6 @@ return {
 				lsp_format = "fallback",
 				async = true,
 			},
-
-			notify_on_error = true,
-
-			log_level = vim.log.levels.ERROR,
 		})
 
 		vim.api.nvim_create_autocmd("BufWritePre", {
