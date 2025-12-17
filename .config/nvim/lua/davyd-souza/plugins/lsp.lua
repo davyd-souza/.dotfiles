@@ -23,6 +23,15 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-buffer",
 		},
+		opts = {
+			servers = {
+				tsserver = {
+					on_attach = function(client)
+						client.server_capabilities.documentFormattingProvider = false
+					end,
+				},
+			},
+		},
 		config = function()
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("davyd-souza-lsp-attach", { clear = true }),
@@ -47,6 +56,7 @@ return {
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
+
 					if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
 						local highlight_augroup =
 							vim.api.nvim_create_augroup("davyd-souza-lsp-highlight", { clear = true })
@@ -76,6 +86,25 @@ return {
 							vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 						end, "[T]oggle Inlay [H]ints")
 					end
+
+					--[[
+					if client and client.name == "biome" then
+						print("biome")
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							group = vim.api.nvim_create_augroup("BiomeFixAll", { clear = true }),
+							callback = function()
+								vim.lsp.bug.code_action({
+									context = {
+										only = { "source.fixAll.biome" },
+										diagnostics = {},
+									},
+									apply = true,
+								})
+							end,
+						})
+					end
+					]]
+					--
 				end,
 			})
 
@@ -90,6 +119,29 @@ return {
 								callSnipped = "Replace",
 							},
 						},
+					},
+				},
+				eslint = {
+					on_attach = function(client, buffer)
+						vim.api.nvim_create_autocmd("BufWritePre", {
+							buffer = buffer,
+							callback = function(event)
+								local namespace = vim.lsp.diagnostic.get_namespace(client.id, true)
+								local diagnostic = vim.diagnostic.get(event.buf, { namespace = namespace })
+
+								local eslint = function(formatter)
+									return formatter.name == "eslint"
+								end
+								if #diagnostic > 0 then
+									vim.lsp.buf.format({ async = false, filter = eslint })
+								end
+							end,
+						})
+					end,
+					settings = {
+						format = { enable = true },
+						workingDirectory = { mode = "auto" },
+						codeActionsOnSave = { enable = true, mode = "problems" },
 					},
 				},
 				-- biome = {
@@ -113,14 +165,15 @@ return {
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua",
-				"biome",
-				"typescript-language-server",
-				"tailwindcss-language-server",
+				-- "biome",
+				-- "typescript-language-server",
+				-- "tailwindcss-language-server",
 			})
 
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 			require("mason-lspconfig").setup({
+				automatic_enable = false,
 				ensure_installed = {},
 				automatic_installation = false,
 				handlers = {
@@ -141,5 +194,30 @@ return {
 			"neovim/nvim-lspconfig",
 		},
 		opts = {},
+		config = function()
+			require("typescript-tools").setup({
+				settings = {
+					-- default: "auto"
+					-- number in MBs
+					tsserver_max_memory = 1500,
+				},
+			})
+		end,
+	},
+	{
+		"luckasRanarison/tailwind-tools.nvim",
+		name = "tailwind-tools",
+		build = ":UpdateRemotePlugins",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-telescope/telescope.nvim",
+			"neovim/nvim-lspconfig",
+		},
+		config = function()
+			require("lspconfig").tailwindcss.setup({
+				root_dir = require("lspconfig").util.root_pattern("app.css"),
+			})
+			require("tailwind-tools").setup()
+		end,
 	},
 }
