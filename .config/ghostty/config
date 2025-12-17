@@ -43,7 +43,7 @@
 # resize-overlay-duration = 4s 200ms
 theme = catppuccin-mocha
 
-window-decoration = none
+#window-decoration = none
 window-padding-x = 8
 window-padding-y = 8
 
