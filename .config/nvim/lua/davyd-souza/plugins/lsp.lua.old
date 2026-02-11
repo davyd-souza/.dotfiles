@@ -25,11 +25,12 @@ return {
 		},
 		opts = {
 			servers = {
-				tsserver = {
+				--[[tsserver = {
 					on_attach = function(client)
 						client.server_capabilities.documentFormattingProvider = false
 					end,
-				},
+				},]]
+				--
 			},
 		},
 		config = function()
@@ -52,7 +53,7 @@ return {
 						"[W]orkspace [S]ymbols"
 					)
 					map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-					map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
+					map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
 					map("gD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -166,6 +167,7 @@ return {
 			vim.list_extend(ensure_installed, {
 				"stylua",
 				"tailwindcss-language-server",
+				"tsgo",
 				-- "biome",
 				-- "typescript-language-server",
 			})
@@ -187,7 +189,7 @@ return {
 			})
 		end,
 	},
-	{
+	--[[{
 		"pmizio/typescript-tools.nvim",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
@@ -203,7 +205,8 @@ return {
 				},
 			})
 		end,
-	},
+	}]]
+	--
 	{
 		"luckasRanarison/tailwind-tools.nvim",
 		name = "tailwind-tools",
